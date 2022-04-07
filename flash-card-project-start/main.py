@@ -3,12 +3,15 @@ import pandas as pd
 import random
 word = ''
 BACKGROUND_COLOR = "#B1DDC6"
-
 '# data frame'
 
 try:
-    df = pd.read_csv("words_to_learn")
-    list_dict = df.to_dict(orient="records")
+    df = pd.read_csv("data/words_to_learn.csv")
+    if len(df) > 0:
+        list_dict = df.to_dict(orient="records")
+    else:
+        df = pd.read_csv("data/french_words.csv")
+        list_dict = df.to_dict(orient="records")
 except FileNotFoundError:
     df = pd.read_csv("data/french_words.csv")
     list_dict = df.to_dict(orient="records")
@@ -39,10 +42,20 @@ def image_unknown():
     global word
     word_change()
 
+
 def image_known():
     global word
-    list_dict.remove(word)
-    word_change()
+    try:
+        list_dict.remove(word)
+    except ValueError:
+        canvas.itemconfig(canvas_image, image=front_image)
+        canvas.itemconfig(title, text="CONGRATULATIONS", fill="black")
+        canvas.itemconfig(word_french, text="NO PENDING WORDS", fill="black", font=("Ariel", 30, "italic"))
+    try:
+        word_change()
+    except IndexError:
+        print("No more words on the list")
+
 
 window = Tk()
 window.title("Flash Card Project")
@@ -66,7 +79,7 @@ word_french = canvas.create_text(400, 263, text="", font=("Ariel", 60, "bold"))
 
 
 right = PhotoImage(file="images/right.png")
-button_right = Button(image=right, highlightthickness=0, command=word_change)
+button_right = Button(image=right, highlightthickness=0, command=image_known)
 button_right.grid(column=1, row=1)
 
 # button wrong
@@ -79,4 +92,4 @@ word_change()
 window.mainloop()
 
 df_end = pd.DataFrame(list_dict)
-df_end.to_csv('words_to_learn')
+df_end.to_csv('data/words_to_learn.csv', index= False)
