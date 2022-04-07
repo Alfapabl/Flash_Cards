@@ -2,7 +2,6 @@ from tkinter import *
 import pandas as pd
 import random
 word = ''
-removed_list = []
 BACKGROUND_COLOR = "#B1DDC6"
 
 '# data frame'
@@ -22,7 +21,6 @@ def word_change():
     global timer, word
     window.after_cancel(timer)
     word = random.choice(list_dict)
-    print(word)
     canvas.itemconfig(word_french, text=word["French"])
     canvas.itemconfig(title, text="French", fill="black")
     canvas.itemconfig(canvas_image, image=front_image)
@@ -38,12 +36,13 @@ def image_change():
 
 
 def image_unknown():
-    global word, removed_list
+    global word
     word_change()
+
+def image_known():
+    global word
     list_dict.remove(word)
-
-
-
+    word_change()
 
 window = Tk()
 window.title("Flash Card Project")
